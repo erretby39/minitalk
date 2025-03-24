@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: soer-ret <soer-ret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/20 15:51:50 by soer-ret          #+#    #+#             */
-/*   Updated: 2025/03/24 01:21:10 by soer-ret         ###   ########.fr       */
+/*   Created: 2025/03/23 17:19:34 by soer-ret          #+#    #+#             */
+/*   Updated: 2025/03/24 02:25:40 by soer-ret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,25 +37,12 @@ void	send_signal(int pid, unsigned char character)
 	}
 }
 
-void	msg_received(int signal)
-{
-	printf("I was here\n");
-    if (signal == SIGUSR1)
-		printf("message received\n");
-        // write(1, "message received\n", 17);
-}
-
 int	main(int argc, char *argv[])
 {
 	int			server_pid;
 	const char	*message;
-	
-	struct sigaction	sa;
-	sa.sa_handler = &msg_received;
-	sa.sa_flags = SA_RESTART;
-	
-
 	int			i;
+
 	if (argc != 3)
 		ft_putstr("Usage: ./client <pid> <message>\n", 2);
 	server_pid = ft_atoi(argv[1]);
@@ -63,10 +50,9 @@ int	main(int argc, char *argv[])
 		exit(1);
 	message = argv[2];
 	i = 0;
-	sigaction(SIGUSR1, &sa, NULL);
 	while (message[i])
 		send_signal(server_pid, message[i++]);
 	send_signal(server_pid, '\n');
-	send_signal(server_pid, '\0');
+	ft_putstr("message is sent\n", 1);
 	return (0);
 }

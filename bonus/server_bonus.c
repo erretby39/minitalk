@@ -1,28 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server_bonus.c                                     :+:      :+:    :+:   */
+/*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: soer-ret <soer-ret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/23 17:21:10 by soer-ret          #+#    #+#             */
-/*   Updated: 2025/03/23 21:33:40 by soer-ret         ###   ########.fr       */
+/*   Created: 2025/03/20 15:51:08 by soer-ret          #+#    #+#             */
+/*   Updated: 2025/03/24 02:24:16 by soer-ret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minitalk.h"
-
-void	ft_putstr(char *s, int fd)
-{
-	int	i;
-
-	i = 0;
-	while (s[i])
-	{
-		write(fd, &s[i], 1);
-		i++;
-	}
-}
 
 void	ft_putchar(char c)
 {
@@ -65,6 +53,10 @@ void	handle_signal(int signal, siginfo_t *info, void *context)
 	bit_index++;
 	if (bit_index == 8)
 	{
+		if (current_char == '\0')
+		{
+			kill(info->si_pid, SIGUSR1);
+		}
 		write(1, &current_char, 1);
 		bit_index = 0;
 		current_char = 0;

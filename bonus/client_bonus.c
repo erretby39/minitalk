@@ -1,65 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client_bonus.c                                     :+:      :+:    :+:   */
+/*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: soer-ret <soer-ret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/23 17:19:34 by soer-ret          #+#    #+#             */
-/*   Updated: 2025/03/23 21:33:33 by soer-ret         ###   ########.fr       */
+/*   Created: 2025/03/20 15:51:50 by soer-ret          #+#    #+#             */
+/*   Updated: 2025/03/24 02:24:21 by soer-ret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minitalk.h"
-
-void	ft_putstr(char *s, int fd)
-{
-	int	i;
-
-	i = 0;
-	while (s[i])
-	{
-		write(fd, &s[i], 1);
-		i++;
-	}
-	exit(1);
-}
-
-int static	ft_space(char c)
-{
-	return (
-		c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f'
-		|| c == '\r');
-}
-
-int	ft_atoi(const char *str)
-{
-	int				i;
-	int				final_value;
-	long long int	nbr;
-
-	nbr = 0;
-	i = 0;
-	final_value = 1;
-	while (str[i] && ft_space(str[i]))
-		i++;
-	if (str[i] == '-' || str[i] == '+')
-	{
-		if (str[i++] == '-')
-			final_value = -1;
-	}
-	while (str[i] >= '0' && str[i] <= '9')
-	{
-		nbr = nbr * 10 + str[i++] - '0';
-		if (nbr < (-2147483648) && final_value == -1)
-			return (0);
-		if (nbr > 2147483647 && final_value == 1)
-			return (-1);
-	}
-	if (str[i])
-		return (0);
-	return (nbr * final_value);
-}
 
 void	send_signal(int pid, unsigned char character)
 {
@@ -86,12 +37,21 @@ void	send_signal(int pid, unsigned char character)
 	}
 }
 
+void	msg_received(int signal)
+{
+	if (signal == SIGUSR1)
+		write(1, "message received\n", 17);
+}
+
 int	main(int argc, char *argv[])
 {
-	int			server_pid;
-	const char	*message;
-	int			i;
+	int					i;
+	int					server_pid;
+	const char			*message;
+	struct sigaction	sa;
 
+	sa.sa_handler = &msg_received;
+	sa.sa_flags = SA_RESTART;
 	if (argc != 3)
 		ft_putstr("Usage: ./client <pid> <message>\n", 2);
 	server_pid = ft_atoi(argv[1]);
@@ -99,9 +59,10 @@ int	main(int argc, char *argv[])
 		exit(1);
 	message = argv[2];
 	i = 0;
+	sigaction(SIGUSR1, &sa, NULL);
 	while (message[i])
 		send_signal(server_pid, message[i++]);
 	send_signal(server_pid, '\n');
-	ft_putstr("message is sent\n", 1);
+	send_signal(server_pid, '\0');
 	return (0);
 }

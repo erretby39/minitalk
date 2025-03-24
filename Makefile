@@ -17,10 +17,10 @@ server: server.o utils.o
 bonus: $(BTARGETS)
 
 bonus/client_bonus: bonus/client_bonus.o
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) utils.o $< -o $@
 
 bonus/server_bonus: bonus/server_bonus.o
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) utils.o $< -o $@
 
 %.o: %.c minitalk.h
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -29,10 +29,10 @@ bonus/%.o: bonus/%.c minitalk.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f client.o server.o bonus/client_bonus.o bonus/server_bonus.o
+	rm -f client.o server.o utils.o bonus/client_bonus.o bonus/server_bonus.o
 
 fclean: clean
-	rm -f $(TARGETS) $(BTARGETS)
+	rm -f $(TARGETS) $(BTARGETS) clean
 
 re: fclean all
 
